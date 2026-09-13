@@ -1,4 +1,8 @@
+
 import { useState } from "react";
+
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -31,7 +35,6 @@ function App() {
   const [expenses, setExpenses] = useState([]);
   const [expensesError, setExpensesError] = useState("");
 
-  // Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
 
@@ -68,16 +71,13 @@ function App() {
     formData.append("password", password);
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData,
+      });
 
       const data = await response.json();
 
@@ -123,29 +123,24 @@ function App() {
     const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/expenses",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            amount: Number(amount),
-            description: description,
-            transaction_date: transactionDate,
-            category: category || null,
-          }),
-        }
-      );
+      const response = await fetch(`${API_URL}/expenses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: Number(amount),
+          description: description,
+          transaction_date: transactionDate,
+          category: category || null,
+        }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setExpenseError(
-          data.detail || "Failed to add expense."
-        );
+        setExpenseError(data.detail || "Failed to add expense.");
         return;
       }
 
@@ -158,9 +153,7 @@ function App() {
       setTransactionDate("");
       setCategory("");
     } catch (error) {
-      setExpenseError(
-        "Unable to connect to SmartSpend server."
-      );
+      setExpenseError("Unable to connect to SmartSpend server.");
     }
   }
 
@@ -174,31 +167,24 @@ function App() {
     const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/expenses",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/expenses`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setExpensesError(
-          data.detail || "Failed to load expenses."
-        );
+        setExpensesError(data.detail || "Failed to load expenses.");
         return;
       }
 
       setExpenses(data);
       setShowExpenses(true);
     } catch (error) {
-      setExpensesError(
-        "Unable to connect to SmartSpend server."
-      );
+      setExpensesError("Unable to connect to SmartSpend server.");
     }
   }
 
@@ -228,7 +214,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/expenses/${editingExpense.id}`,
+        `${API_URL}/expenses/${editingExpense.id}`,
         {
           method: "PUT",
           headers: {
@@ -247,25 +233,19 @@ function App() {
       const data = await response.json();
 
       if (!response.ok) {
-        setEditError(
-          data.detail || "Failed to update expense."
-        );
+        setEditError(data.detail || "Failed to update expense.");
         return;
       }
 
       setExpenses((currentExpenses) =>
         currentExpenses.map((expense) =>
-          expense.id === editingExpense.id
-            ? data
-            : expense
+          expense.id === editingExpense.id ? data : expense
         )
       );
 
       setEditingExpense(null);
     } catch (error) {
-      setEditError(
-        "Unable to connect to SmartSpend server."
-      );
+      setEditError("Unable to connect to SmartSpend server.");
     }
   }
 
@@ -286,7 +266,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/expenses/${expenseId}`,
+        `${API_URL}/expenses/${expenseId}`,
         {
           method: "DELETE",
           headers: {
@@ -312,9 +292,7 @@ function App() {
 
       setExpensesError("");
     } catch (error) {
-      setExpensesError(
-        "Unable to connect to SmartSpend server."
-      );
+      setExpensesError("Unable to connect to SmartSpend server.");
     }
   }
 
@@ -340,7 +318,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/expenses/import",
+        `${API_URL}/expenses/import`,
         {
           method: "POST",
           headers: {
@@ -353,9 +331,7 @@ function App() {
       const data = await response.json();
 
       if (!response.ok) {
-        setCsvError(
-          data.detail || "CSV import failed."
-        );
+        setCsvError(data.detail || "CSV import failed.");
         return;
       }
 
@@ -367,9 +343,7 @@ function App() {
 
       await handleViewExpensesAfterImport();
     } catch (error) {
-      setCsvError(
-        "Unable to connect to SmartSpend server."
-      );
+      setCsvError("Unable to connect to SmartSpend server.");
     }
   }
 
@@ -381,15 +355,12 @@ function App() {
     const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/expenses",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/expenses`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
@@ -406,10 +377,9 @@ function App() {
   // =========================
 
   const filteredExpenses = expenses.filter((expense) => {
-    const matchesSearch =
-      expense.description
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+    const matchesSearch = expense.description
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
 
     const matchesCategory =
       categoryFilter === "All" ||
@@ -425,24 +395,19 @@ function App() {
   if (loggedIn) {
     return (
       <div className="app">
-
         <header className="navbar">
           <h1>SmartSpend</h1>
 
-          <button onClick={handleLogout}>
-            Logout
-          </button>
+          <button onClick={handleLogout}>Logout</button>
         </header>
 
         <main className="container">
-
           {/* Dashboard */}
 
           {!showAddExpense &&
             !showExpenses &&
             !editingExpense && (
               <section className="dashboard">
-
                 <h2>Welcome to SmartSpend</h2>
 
                 <p>
@@ -451,7 +416,6 @@ function App() {
                 </p>
 
                 <div className="dashboard-cards">
-
                   {/* Add Expense */}
 
                   <div
@@ -487,7 +451,6 @@ function App() {
                   {/* CSV Import */}
 
                   <div className="feature-card">
-
                     <h3>Import CSV</h3>
 
                     <p>
@@ -495,14 +458,11 @@ function App() {
                     </p>
 
                     <form onSubmit={handleCsvImport}>
-
                       <input
                         type="file"
                         accept=".csv"
                         onChange={(e) =>
-                          setCsvFile(
-                            e.target.files[0]
-                          )
+                          setCsvFile(e.target.files[0])
                         }
                       />
 
@@ -512,7 +472,6 @@ function App() {
                       >
                         Upload CSV
                       </button>
-
                     </form>
 
                     {csvMessage && (
@@ -526,9 +485,7 @@ function App() {
                         {csvError}
                       </p>
                     )}
-
                   </div>
-
                 </div>
 
                 {expensesError && (
@@ -536,7 +493,6 @@ function App() {
                     {expensesError}
                   </p>
                 )}
-
               </section>
             )}
 
@@ -546,7 +502,6 @@ function App() {
             !showExpenses &&
             !editingExpense && (
               <section className="login-card">
-
                 <h2>Add Expense</h2>
 
                 <p>
@@ -554,7 +509,6 @@ function App() {
                 </p>
 
                 <form onSubmit={handleAddExpense}>
-
                   <input
                     type="number"
                     placeholder="Amount"
@@ -581,9 +535,7 @@ function App() {
                     type="date"
                     value={transactionDate}
                     onChange={(e) =>
-                      setTransactionDate(
-                        e.target.value
-                      )
+                      setTransactionDate(e.target.value)
                     }
                     required
                   />
@@ -615,7 +567,6 @@ function App() {
                       {expenseError}
                     </p>
                   )}
-
                 </form>
 
                 <button
@@ -628,7 +579,6 @@ function App() {
                 >
                   Back to Dashboard
                 </button>
-
               </section>
             )}
 
@@ -638,7 +588,6 @@ function App() {
             !showAddExpense &&
             !editingExpense && (
               <section className="login-card">
-
                 <h2>My Expenses</h2>
 
                 {/* Search */}
@@ -663,21 +612,27 @@ function App() {
                   <option value="All">
                     All Categories
                   </option>
+
                   <option value="Food">
                     Food
                   </option>
+
                   <option value="Transport">
                     Transport
                   </option>
+
                   <option value="Shopping">
                     Shopping
                   </option>
+
                   <option value="Bills">
                     Bills
                   </option>
+
                   <option value="Entertainment">
                     Entertainment
                   </option>
+
                   <option value="Other">
                     Other
                   </option>
@@ -691,7 +646,6 @@ function App() {
                   </p>
                 ) : (
                   <div>
-
                     {filteredExpenses.map((expense) => (
                       <div
                         key={expense.id}
@@ -700,7 +654,6 @@ function App() {
                           marginBottom: "15px",
                         }}
                       >
-
                         <h3>
                           ₹{expense.amount}
                         </h3>
@@ -713,16 +666,12 @@ function App() {
                         </p>
 
                         <p>
-                          <strong>
-                            Date:
-                          </strong>{" "}
+                          <strong>Date:</strong>{" "}
                           {expense.transaction_date}
                         </p>
 
                         <p>
-                          <strong>
-                            Category:
-                          </strong>{" "}
+                          <strong>Category:</strong>{" "}
                           {expense.category ||
                             "Uncategorized"}
                         </p>
@@ -742,10 +691,8 @@ function App() {
                         >
                           Delete
                         </button>
-
                       </div>
                     ))}
-
                   </div>
                 )}
 
@@ -759,7 +706,6 @@ function App() {
                 >
                   Back to Dashboard
                 </button>
-
               </section>
             )}
 
@@ -767,7 +713,6 @@ function App() {
 
           {editingExpense && (
             <section className="login-card">
-
               <h2>Edit Expense</h2>
 
               <p>
@@ -775,7 +720,6 @@ function App() {
               </p>
 
               <form onSubmit={handleEditExpense}>
-
                 <input
                   type="number"
                   placeholder="Amount"
@@ -830,7 +774,6 @@ function App() {
                     {editError}
                   </p>
                 )}
-
               </form>
 
               <button
@@ -841,12 +784,9 @@ function App() {
               >
                 Cancel
               </button>
-
             </section>
           )}
-
         </main>
-
       </div>
     );
   }
@@ -858,15 +798,12 @@ function App() {
   if (showLogin) {
     return (
       <div className="app">
-
         <header className="navbar">
           <h1>SmartSpend</h1>
         </header>
 
         <main className="container">
-
           <section className="login-card">
-
             <h2>Welcome back</h2>
 
             <p>
@@ -874,7 +811,6 @@ function App() {
             </p>
 
             <form onSubmit={handleLogin}>
-
               <input
                 type="email"
                 placeholder="Email"
@@ -907,7 +843,6 @@ function App() {
                   {error}
                 </p>
               )}
-
             </form>
 
             <button
@@ -919,11 +854,8 @@ function App() {
             >
               Back
             </button>
-
           </section>
-
         </main>
-
       </div>
     );
   }
@@ -934,9 +866,7 @@ function App() {
 
   return (
     <div className="app">
-
       <header className="navbar">
-
         <h1>SmartSpend</h1>
 
         <button
@@ -944,13 +874,10 @@ function App() {
         >
           Login
         </button>
-
       </header>
 
       <main className="container">
-
         <section className="welcome">
-
           <h2>
             Manage your expenses smarter.
           </h2>
@@ -966,11 +893,9 @@ function App() {
           >
             Get Started
           </button>
-
         </section>
 
         <section className="features">
-
           <div className="feature-card">
             <h3>Expense Management</h3>
 
@@ -997,11 +922,8 @@ function App() {
               from a CSV file.
             </p>
           </div>
-
         </section>
-
       </main>
-
     </div>
   );
 }
