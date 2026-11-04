@@ -17,7 +17,7 @@ import ExpenseForm from "./components/ExpenseForm.jsx";
 import ImportView from "./components/ImportView.jsx";
 import { Icon } from "./components/Icons.jsx";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const API_URL = "https://smartspend-backend-q8j7.onrender.com";
 const CATEGORIES = [
   "Food",
   "Transport",
