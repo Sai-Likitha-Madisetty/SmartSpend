@@ -38,7 +38,7 @@ app = FastAPI(title="SmartSpend API")
 
 origins = [
     "http://localhost:5173",
-    "https://smartspend-frontend.onrender.com",  
+    "https://smartspend-frontend-xeq7.onrender.com",  
 ]
 
 app.add_middleware(
