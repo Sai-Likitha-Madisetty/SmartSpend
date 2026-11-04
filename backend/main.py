@@ -1,5 +1,5 @@
 from services.categorizer import categorize_transaction
-
+from fastapi.middleware.cors import CORSMiddleware
 from auth import create_access_token, verify_access_token
 
 from fastapi import (
@@ -36,10 +36,14 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="SmartSpend API")
 
+origins = [
+    "http://localhost:5173",
+    "https://smartspend-frontend.onrender.com",  
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
